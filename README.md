@@ -1,7 +1,7 @@
 # ExpressTemplate
 <h1>What is this </h1>
-  This is a cli tool built to help setting up expressjs projects faster
-  It will create a src file with a index.js file in init. The index.js contains the basic structure to run an expressjs server
+  This is a CLI tool built to help setting up ExpressJS projects faster
+  It will create a src file with a index.js file in init. The index.js contains the basic structure to run an ExpressJS server
   Alongside creating the index.js file, it will also automatically install expressjs using npm and add a npm run script in the package.json file
   
 <h1> Technologies used </h1>
