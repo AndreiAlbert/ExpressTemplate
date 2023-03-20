@@ -2,7 +2,7 @@
 const fs = require('fs');
 const yargs = require('yargs');
 const shell = require('shelljs');
-const { log } = require('console');
+const { exit } = require('process');
 let path = '.';
 let port = 5000;
 
@@ -12,6 +12,10 @@ let port = 5000;
  * @return {*} void
  */
 function createSrc(path) {
+    if(!fs.existsSync(`${path}`)) {
+        console.log(`[ERROR]: ${path} does not exist`);
+        exit(1);
+    }
     if (!fs.existsSync(`${path}/src`)) {
         fs.mkdir(`${path}/src`, (error) => {
             if (error) {
@@ -38,12 +42,22 @@ function createIndexFile(path, port) {
     })
 }
 
-function gitInit() {
+/**
+ *Initializez git repository and adds a .gitignore file for node_modules
+ * @param {*} path path to root directory of project
+ */
+function gitInit(path) {
     try {
         shell.exec('git init');
     }catch(error){
         console.log(`Error with git init\nError message:${error.message}`);
     }
+    fs.writeFile(`${path}/.gitignore`, 'node_modules' , (error) => {
+        if (error) {
+            console.log(error.message);
+            return;
+        }
+    })
 }
 
 function npmInit() {
@@ -62,11 +76,32 @@ function installExpress() {
     }
 }
 
+
+
+/**
+ *Adds an npm script for running the server
+ * @param {*} path path to the root directort of the project
+ */
+function addRunScript(path) {
+    fs.readFile(`${path}/package.json`,  (err, rawData) => {
+        if (err) {
+            console.log(err.message);
+            return;
+        }
+        processedJson = JSON.parse(rawData);
+        processedJson['scripts']['server'] = 'node src/index.js';
+        processedJson = JSON.stringify(processedJson);
+        fs.writeFile(`${path}/package.json`,processedJson ,(err) => {
+            if (err) {
+                console.log(err.message);
+                return;
+            }
+        })
+    })
+}
+
 function main() {
     const args = yargs.argv;
-    if (args.g) {
-        console.log('heres g');
-    }
     if (args.path) {
         path = args.path;
     } 
@@ -83,7 +118,10 @@ function main() {
     }
     npmInit();
     installExpress();
-    gitInit()
+    addRunScript(path);
+    if (args.g) {
+        gitInit(path);
+    }
 }
 
 main()

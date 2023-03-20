@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "bin": {
-    "cli2": "./bin/index.js"
+    "expresstemplate": "./bin/index.js"
   },
   "keywords": [],
   "author": "",
